@@ -10,7 +10,7 @@ RUN mvn clean package assembly:single -DskipTests
 # Package stage
 #
 FROM openjdk:17-jdk-slim
-COPY --from=build /target/TPDDSApp.jar TPDDSApp.jar
+COPY --from=build /target/my-app-name-1.0-SNAPSHOT-jar-with-dependencies.jar TPDDSApp.jar
 # ENV PORT=8080
 EXPOSE 8080
-ENTRYPOINT ["java","-classpath","2024-tp-entrega-2-SantuRod.jar","ar.edu.utn.dds.k3003.app.WebApp"]
+ENTRYPOINT ["java","-classpath","TPDDSApp.jar","ar.edu.utn.dds.k3003.app.WebApp"]
