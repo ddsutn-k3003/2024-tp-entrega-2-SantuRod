@@ -1,7 +1,7 @@
 package ar.edu.utn.dds.k3003.controller;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
-import ar.edu.utn.dds.k3003.request.DepositoRequest;
+import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 
@@ -15,9 +15,9 @@ public class RetiroController {
     }
     public void retirar(Context context){
         try{
-            var depositoRequest = context.bodyAsClass(DepositoRequest.class);
-            this.fachada.depositar(depositoRequest.getIdHeladera(), depositoRequest.getQrVianda());
-            context.result("Vianda depositada correctamente");
+            var retiroDTO = context.bodyAsClass(RetiroDTO.class);
+            this.fachada.retirar(retiroDTO);
+            context.result("Vianda retirada correctamente");
             context.status(HttpStatus.OK);
         }
         catch (NoSuchElementException ex){

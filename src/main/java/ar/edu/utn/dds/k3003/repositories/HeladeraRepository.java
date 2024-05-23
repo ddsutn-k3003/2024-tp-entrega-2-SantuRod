@@ -14,10 +14,13 @@ public class HeladeraRepository {
     }
 
     public Heladera save(Heladera heladera){
+        if(Objects.isNull(heladera.getCantidadViandas())){
+            heladera.setCantidadViandas(0);
+        }
         if(Objects.isNull(heladera.getId())) {
             heladera.setId((int) seqId.getAndIncrement());
+            this.heladeras.add(heladera);
         }
-        this.heladeras.add(heladera);
         return heladera;
     }
 

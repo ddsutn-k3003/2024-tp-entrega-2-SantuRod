@@ -25,7 +25,7 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras {
 
     @Override
     public HeladeraDTO agregar(HeladeraDTO heladeraDTO) {
-        Heladera heladera = new Heladera(heladeraDTO.getId(), heladeraDTO.getNombre());
+        Heladera heladera = new Heladera(heladeraDTO.getId(), heladeraDTO.getNombre(), heladeraDTO.getCantidadDeViandas());
         heladera = this.heladeraRepository.save(heladera);
         return heladeraMapper.map(heladera);
     }
@@ -34,23 +34,27 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras {
     public void depositar(Integer integer, String s) throws NoSuchElementException { // ID HELADERA, QR VIANDA
         ViandaDTO viandaDTO = fachadaViandas.buscarXQR(s);
         Heladera heladera = this.heladeraRepository.findById(integer);
-        heladera.addVianda(viandaDTO);
+        heladera.addVianda();
         fachadaViandas.modificarEstado(viandaDTO.getCodigoQR(), EstadoViandaEnum.DEPOSITADA);
     }
 
     @Override
     public Integer cantidadViandas(Integer integer) throws NoSuchElementException { // ID HELADERA
         Heladera heladera = this.heladeraRepository.findById(integer);
-        return heladera.getViandas().size();
+        return heladera.getCantidadViandas();
     }
 
     @Override
     public void retirar(RetiroDTO retiroDTO) throws NoSuchElementException {
-        String qrVianda = retiroDTO.getQrVianda();
         Integer heladeraId = retiroDTO.getHeladeraId();
         Heladera heladera = this.heladeraRepository.findById(heladeraId);
-        heladera.removeVianda(qrVianda);
-        fachadaViandas.modificarEstado(qrVianda, EstadoViandaEnum.RETIRADA);
+        //if (heladera.getCantidadViandas() > 0){
+            ViandaDTO viandaDTO = fachadaViandas.buscarXQR(retiroDTO.getQrVianda());
+            heladera.removeVianda();
+            fachadaViandas.modificarEstado(viandaDTO.getCodigoQR(), EstadoViandaEnum.RETIRADA);
+        //}
+        //else
+            //throw new NoSuchElementException("Esta heladera no contiene viandas.");
     }
 
     @Override

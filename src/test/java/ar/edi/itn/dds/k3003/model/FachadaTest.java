@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
 
 @ExtendWith({MockitoExtension.class})
 public class FachadaTest {
-    private static final Integer HELADERA_ID = 20;
+    private Integer HELADERA_ID;
     Fachada fachada = new Fachada();
     @Mock
     FachadaViandas viandas;
@@ -29,8 +29,9 @@ public class FachadaTest {
     @BeforeEach
     void setUp(){
         try {
-            this.fachada.agregar(new HeladeraDTO(HELADERA_ID, "Heladera1"));
+            HeladeraDTO unaHeladera = this.fachada.agregar(new HeladeraDTO("Heladera1"));
             this.fachada.setViandasProxy(this.viandas);
+            this.HELADERA_ID = unaHeladera.getId();
         } catch (Throwable ex){
             throw ex;
         }
@@ -43,11 +44,12 @@ public class FachadaTest {
         Mockito.when(this.viandas.buscarXQR("QR2")).thenReturn(new ViandaDTO("QR2", LocalDateTime.now(), EstadoViandaEnum.PREPARADA, 1L, HELADERA_ID));
         Mockito.when(this.viandas.buscarXQR("QR3")).thenReturn(new ViandaDTO("QR3", LocalDateTime.now(), EstadoViandaEnum.PREPARADA, 1L, HELADERA_ID));
         Mockito.when(this.viandas.buscarXQR("QR4")).thenReturn(new ViandaDTO("QR4", LocalDateTime.now(), EstadoViandaEnum.PREPARADA, 1L, 21));
-        this.fachada.agregar(new HeladeraDTO(21,"Heladera2"));
+        HeladeraDTO otraHeladera = this.fachada.agregar(new HeladeraDTO("Heladera2"));
+        Integer otraHeladeraId = otraHeladera.getId();
         fachada.depositar(HELADERA_ID, "QR1");
         fachada.depositar(HELADERA_ID, "QR2");
         fachada.depositar(HELADERA_ID, "QR3");
-        fachada.depositar(21, "QR4");
+        fachada.depositar(otraHeladeraId, "QR4");
         Assertions.assertEquals(3, fachada.cantidadViandas(HELADERA_ID), "Las viandas no se agregaron correctamente");
     }
     @Test
@@ -56,14 +58,15 @@ public class FachadaTest {
         Mockito.when(this.viandas.buscarXQR("QR1")).thenReturn(new ViandaDTO("QR1", LocalDateTime.now(), EstadoViandaEnum.PREPARADA, 1L, HELADERA_ID));
         Mockito.when(this.viandas.buscarXQR("QR2")).thenReturn(new ViandaDTO("QR2", LocalDateTime.now(), EstadoViandaEnum.PREPARADA, 1L, HELADERA_ID));
         Mockito.when(this.viandas.buscarXQR("QR3")).thenReturn(new ViandaDTO("QR3", LocalDateTime.now(), EstadoViandaEnum.PREPARADA, 1L, HELADERA_ID));
-        this.fachada.agregar(new HeladeraDTO(21,"Heladera2"));
+        HeladeraDTO otraHeladera = this.fachada.agregar(new HeladeraDTO("Heladera2"));
+        Integer otraHeladeraId = otraHeladera.getId();
         fachada.depositar(HELADERA_ID, "QR1");
-        fachada.depositar(21, "QR1");
+        fachada.depositar(otraHeladeraId, "QR1");
         fachada.depositar(HELADERA_ID, "QR2");
         fachada.depositar(HELADERA_ID, "QR3");
         fachada.retirar(new RetiroDTO("QR2","asd",HELADERA_ID ));
         fachada.retirar(new RetiroDTO("QR3","asd",HELADERA_ID ));
-        fachada.retirar(new RetiroDTO("QR1","asd",21 ));
+        fachada.retirar(new RetiroDTO("QR1","asd",otraHeladeraId ));
         Assertions.assertEquals(1, fachada.cantidadViandas(HELADERA_ID), "Las viandas no se retiraron correctamente");
     }
     @Test
